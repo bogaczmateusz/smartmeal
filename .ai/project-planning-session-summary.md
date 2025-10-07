@@ -27,7 +27,7 @@
 11. Error Handling: If the AI service is unavailable, display a clear and apologetic message to the user.
 </matched_recommendations>
 <prd_planning_summary>
-This document summarizes the planning for the SmartMeal MVP, a web application designed to help users store, generate, and organize recipes.
+This document summarizes the planning for the MVP, a web application designed to help users store, generate, and organize recipes.
 a. Main Functional Requirements
 1. User Account Management: Users can register using an email and password, and permanently delete their accounts and all associated data.
 2. User Preferences: A profile page where users can manage a single list of "ingredients to avoid".
