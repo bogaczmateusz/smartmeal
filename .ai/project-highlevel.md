@@ -2,7 +2,7 @@
 
 ## Main Problem
 
-There is no simple, centralized place that allows users to store, generate, and organize recipes within a single ecosystem — independent of external websites. Saved web pages often become unavailable over time, which results in users losing access to their favorite recipes.
+Users often rely on browser bookmarks or saved links to external recipe sites, which frequently become unavailable or outdated. The application provides a centralized ecosystem to store, generate, and organize recipes — ensuring they’re always accessible and truly owned by the user. Powered by AI, it helps turn ideas and available ingredients into unique, personalized meals that match individual taste.
 
 ## Minimum Viable Feature Set
 
