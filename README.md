@@ -89,7 +89,7 @@ To get a local copy up and running, follow these steps.
     ```env
     # Supabase
     SUPABASE_URL=your_supabase_url
-    SUPABASE_ANON_KEY=your_supabase_anon_key
+    SUPABASE_KEY=your_supabase_key
     SUPABASE_PROJECT_REF=your_supabase_project_ref
     SUPABASE_DB_PASSWORD=your_supabase_db_password
 
