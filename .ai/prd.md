@@ -30,6 +30,7 @@ Users often rely on browser bookmarks or saved links to external recipe sites, w
 - If a user tries to generate a recipe with an ingredient from their "ingredients to avoid" list, a non-blocking warning will appear, allowing them to proceed if they choose.
 - The prompt sent to the AI API will include instructions to encourage creative and varied results.
 - If the AI generation service is unavailable, a clear, user-friendly error message must be displayed.
+- AI-generated recipe is held in client-side state before the user accepts and saves it to the database.
 
 ### 3.4 Recipe Management
 
