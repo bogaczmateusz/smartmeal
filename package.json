@@ -9,7 +9,9 @@
     "astro": "astro",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "supabase:link": "dotenv -e .env -- cross-var supabase link --project-ref $SUPABASE_PROJECT_REF --password $SUPABASE_DB_PASSWORD",
+    "supabase:migrate": "supabase db push"
   },
   "dependencies": {
     "@astrojs/node": "^9.4.3",
@@ -34,6 +36,8 @@
     "@eslint/js": "9.23.0",
     "@typescript-eslint/eslint-plugin": "8.28.0",
     "@typescript-eslint/parser": "8.28.0",
+    "cross-var": "^1.1.0",
+    "dotenv-cli": "^10.0.0",
     "eslint": "9.23.0",
     "eslint-config-prettier": "10.1.1",
     "eslint-import-resolver-typescript": "4.2.5",

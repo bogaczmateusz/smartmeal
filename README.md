@@ -44,6 +44,7 @@ The project uses a modern tech stack to deliver a fast, responsive, and intellig
 - `./src/lib` - Services and helpers
 - `./src/assets` - static internal assets
 - `./public` - public assets
+- `./supabase` - Supabase migrations and local development setup
 
 ## Getting Started Locally
 
@@ -89,12 +90,28 @@ To get a local copy up and running, follow these steps.
     # Supabase
     SUPABASE_URL=your_supabase_url
     SUPABASE_ANON_KEY=your_supabase_anon_key
+    SUPABASE_PROJECT_REF=your_supabase_project_ref
+    SUPABASE_DB_PASSWORD=your_supabase_db_password
 
     # OpenRouter.ai
     OPENROUTER_API_KEY=your_openrouter_api_key
     ```
 
-5.  **Run the development server:**
+5.  **Link your local environment to your Supabase project:**
+    This command will link your local repository to your Supabase project.
+
+    ```sh
+    npm run supabase:link
+    ```
+
+6.  **Run database migrations:**
+    This command will apply all pending database migrations to your Supabase project.
+
+    ```sh
+    npm run supabase:migrate
+    ```
+
+7.  **Run the development server:**
     ```sh
     npm run dev
     ```
@@ -110,6 +127,8 @@ In the project directory, you can run the following commands:
 - `npm run lint`: Lints the codebase using ESLint.
 - `npm run lint:fix`: Lints the codebase and automatically fixes issues.
 - `npm run format`: Formats code using Prettier.
+- `npm run supabase:link`: Links your local environment to your Supabase project.
+- `npm run supabase:migrate`: Applies database migrations to your Supabase database.
 
 ## Project Scope
 
