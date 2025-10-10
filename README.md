@@ -129,6 +129,7 @@ In the project directory, you can run the following commands:
 - `npm run format`: Formats code using Prettier.
 - `npm run supabase:link`: Links your local environment to your Supabase project.
 - `npm run supabase:migrate`: Applies database migrations to your Supabase database.
+- `npm run supabase:gentypes`: Generate database types based on your Supabase database schema.
 
 ## Project Scope
 
