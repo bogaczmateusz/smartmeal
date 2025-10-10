@@ -11,13 +11,15 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "supabase:link": "dotenv -e .env -- cross-var supabase link --project-ref $SUPABASE_PROJECT_REF --password $SUPABASE_DB_PASSWORD",
-    "supabase:migrate": "supabase db push"
+    "supabase:migrate": "supabase db push",
+    "supabase:gentypes": "dotenv -e .env -- cross-var supabase gen types typescript --project-id $SUPABASE_PROJECT_REF --schema public > src/db/database.types.ts"
   },
   "dependencies": {
     "@astrojs/node": "^9.4.3",
     "@astrojs/react": "^4.3.1",
     "@astrojs/sitemap": "^3.5.1",
     "@radix-ui/react-slot": "^1.1.2",
+    "@supabase/supabase-js": "^2.75.0",
     "@tailwindcss/vite": "^4.1.13",
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.9",

@@ -22,10 +22,3 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
-
-# supabase
-supabase/.branches
-supabase/.temp
-supabase/.env.keys
-supabase/.env.local
-supabase/.env.*.local
