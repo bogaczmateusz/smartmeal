@@ -7,65 +7,23 @@ import type { GeneratedRecipeDTO } from "../../types";
  */
 export class AIService {
   // Mock data for development
-  private static readonly MOCK_RECIPES: Record<string, GeneratedRecipeDTO> = {
-    default: {
-      title: "Delicious Mixed Recipe",
-      ingredients: [
-        "2 cups main ingredient",
-        "1 cup secondary ingredient",
-        "3 tablespoons seasoning",
-        "Salt and pepper to taste",
-      ],
-      preparation_steps: [
-        "Prepare all ingredients by washing and chopping as needed",
-        "Heat a large pan over medium heat",
-        "Add the main ingredients and cook for 5-7 minutes",
-        "Add secondary ingredients and seasonings",
-        "Cook until everything is well combined and heated through",
-        "Season with salt and pepper to taste",
-        "Serve hot and enjoy!",
-      ],
-    },
-    chicken_rice: {
-      title: "Garlic Chicken with Broccoli Rice",
-      ingredients: [
-        "2 chicken breasts, diced",
-        "2 cups cooked rice",
-        "1 cup broccoli florets",
-        "3 cloves garlic, minced",
-        "2 tablespoons olive oil",
-        "Salt and pepper to taste",
-      ],
-      preparation_steps: [
-        "Heat olive oil in a large pan over medium heat",
-        "Add minced garlic and cook until fragrant (about 1 minute)",
-        "Add diced chicken and cook until golden brown (8-10 minutes)",
-        "Add broccoli florets and cook for 5 minutes until tender",
-        "Mix in cooked rice and stir well to combine",
-        "Season with salt and pepper to taste",
-        "Serve hot and garnish with fresh herbs if desired",
-      ],
-    },
-    pasta: {
-      title: "Creamy Tomato Pasta",
-      ingredients: [
-        "500g pasta of choice",
-        "2 cups tomato sauce",
-        "1 cup heavy cream",
-        "3 cloves garlic, minced",
-        "Fresh basil leaves",
-        "Parmesan cheese for serving",
-      ],
-      preparation_steps: [
-        "Boil pasta according to package instructions until al dente",
-        "While pasta cooks, sauté garlic in a large pan",
-        "Add tomato sauce and simmer for 5 minutes",
-        "Stir in heavy cream and cook for 2-3 minutes",
-        "Drain pasta and add to the sauce",
-        "Toss everything together until well coated",
-        "Serve with fresh basil and parmesan cheese",
-      ],
-    },
+  private static readonly MOCK_RECIPE: GeneratedRecipeDTO = {
+    title: "Delicious Mixed Recipe",
+    ingredients: [
+      "2 cups main ingredient",
+      "1 cup secondary ingredient",
+      "3 tablespoons seasoning",
+      "Salt and pepper to taste",
+    ],
+    preparation_steps: [
+      "Prepare all ingredients by washing and chopping as needed",
+      "Heat a large pan over medium heat",
+      "Add the main ingredients and cook for 5-7 minutes",
+      "Add secondary ingredients and seasonings",
+      "Cook until everything is well combined and heated through",
+      "Season with salt and pepper to taste",
+      "Serve hot and enjoy!",
+    ],
   };
 
   /**
@@ -86,18 +44,9 @@ export class AIService {
       // Simulate API delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Select mock recipe based on ingredients
-      const ingredientString = ingredients.join(" ").toLowerCase();
-
-      if (ingredientString.includes("chicken") && ingredientString.includes("rice")) {
-        return AIService.MOCK_RECIPES.chicken_rice;
-      } else if (ingredientString.includes("pasta")) {
-        return AIService.MOCK_RECIPES.pasta;
-      }
-
       // Return default mock recipe with dynamic title
       return {
-        ...AIService.MOCK_RECIPES.default,
+        ...AIService.MOCK_RECIPE,
         title: `Delicious ${ingredients[0]} Recipe`,
       };
 
