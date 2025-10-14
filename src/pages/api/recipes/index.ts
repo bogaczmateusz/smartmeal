@@ -77,11 +77,11 @@ export async function GET(context: APIContext) {
     // Parse query parameters
     const url = new URL(context.request.url);
     const queryParams = {
-      page: url.searchParams.get("page"),
-      limit: url.searchParams.get("limit"),
-      sort: url.searchParams.get("sort"),
-      order: url.searchParams.get("order"),
-      source: url.searchParams.get("source"),
+      page: url.searchParams.get("page") ?? 1,
+      limit: url.searchParams.get("limit") ?? 20,
+      sort: url.searchParams.get("sort") ?? "created_at",
+      order: url.searchParams.get("order") ?? "desc",
+      source: url.searchParams.get("source") ?? undefined,
     };
 
     // Validate query parameters
