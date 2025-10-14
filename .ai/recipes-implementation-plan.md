@@ -707,7 +707,6 @@ Follow the coding practice guidelines:
   ```
 - Never log sensitive information (auth tokens, full user profiles)
 - Consider structured logging format for future analysis
-- For production, consider external logging service (e.g., Sentry)
 
 ### 7.4 Error Response Helper
 
