@@ -10,11 +10,126 @@ The API exposes the following main resources based on the database schema:
 | **Recipes** | `recipes` | User-saved recipes (both AI-generated and manual) |
 | **Users** | `auth.users` | User account management (handled primarily by Supabase Auth) |
 
-**Note:** The `auth.users` table is managed by Supabase Auth. Authentication operations (register, login, logout) are handled by Supabase Auth SDK on the client-side. The API only provides endpoints for account deletion.
+**Note:** The `auth.users` table is managed by Supabase Auth. Authentication operations (register, login) are exposed through custom API endpoints that wrap the Supabase Auth SDK, providing a consistent REST API interface and enabling custom business logic (e.g., automatic profile creation on registration).
 
 ## 2. Endpoints
 
 ### 2.1 Authentication & User Management
+
+#### Register User
+Registers a new user account and automatically creates their profile.
+
+- **HTTP Method:** `POST`
+- **URL Path:** `/api/auth/register`
+- **Description:** Creates a new user account via Supabase Auth and automatically creates an associated profile with empty ingredients_to_avoid array. Returns authentication tokens for immediate login.
+- **Authentication:** Not required (public endpoint)
+- **Request Payload:**
+  ```json
+  {
+    "email": "user@example.com",
+    "password": "securePassword123"
+  }
+  ```
+  - `email` (required): Valid email address
+  - `password` (required): Minimum 6 characters
+- **Response Payload:**
+  ```json
+  {
+    "user": {
+      "id": "uuid",
+      "email": "user@example.com",
+      "created_at": "2025-01-15T10:30:00Z"
+    },
+    "session": {
+      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+      "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+      "expires_at": 1737028800,
+      "expires_in": 3600
+    },
+    "profile": {
+      "id": "uuid",
+      "user_id": "uuid",
+      "ingredients_to_avoid": [],
+      "created_at": "2025-01-15T10:30:00Z",
+      "updated_at": "2025-01-15T10:30:00Z"
+    }
+  }
+  ```
+- **Success Codes:**
+  - `201 Created` - User registered successfully
+- **Error Codes:**
+  - `400 Bad Request` - Validation errors
+    ```json
+    {
+      "error": "Validation failed",
+      "details": {
+        "email": "Valid email address is required",
+        "password": "Password must be at least 6 characters"
+      }
+    }
+    ```
+  - `409 Conflict` - User already exists
+    ```json
+    {
+      "error": "Conflict",
+      "message": "A user with this email already exists"
+    }
+    ```
+  - `500 Internal Server Error` - Server error during registration
+
+#### Login User
+Authenticates a user and returns access tokens.
+
+- **HTTP Method:** `POST`
+- **URL Path:** `/api/auth/login`
+- **Description:** Authenticates user credentials via Supabase Auth and returns session tokens
+- **Authentication:** Not required (public endpoint)
+- **Request Payload:**
+  ```json
+  {
+    "email": "user@example.com",
+    "password": "securePassword123"
+  }
+  ```
+  - `email` (required): User's email address
+  - `password` (required): User's password
+- **Response Payload:**
+  ```json
+  {
+    "user": {
+      "id": "uuid",
+      "email": "user@example.com",
+      "created_at": "2025-01-15T10:30:00Z"
+    },
+    "session": {
+      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+      "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+      "expires_at": 1737028800,
+      "expires_in": 3600
+    }
+  }
+  ```
+- **Success Codes:**
+  - `200 OK` - Login successful
+- **Error Codes:**
+  - `400 Bad Request` - Validation errors
+    ```json
+    {
+      "error": "Validation failed",
+      "details": {
+        "email": "Email is required",
+        "password": "Password is required"
+      }
+    }
+    ```
+  - `401 Unauthorized` - Invalid credentials
+    ```json
+    {
+      "error": "Unauthorized",
+      "message": "Invalid email or password"
+    }
+    ```
+  - `500 Internal Server Error` - Server error during login
 
 #### Delete User Account
 Permanently deletes the authenticated user's account and all associated data.
@@ -457,13 +572,15 @@ The SmartMeal API uses **Supabase Auth** with **JWT (JSON Web Tokens)** for auth
 
 #### Implementation Details
 
-1. **Client-Side Authentication:**
-   - User registration, login, and logout are handled by the Supabase Auth SDK on the client-side
-   - The SDK automatically manages JWT tokens (access token and refresh token)
-   - Tokens are stored securely in localStorage or sessionStorage by the Supabase client
+1. **Authentication Endpoints:**
+   - User registration and login are handled through custom API endpoints (`POST /api/auth/register`, `POST /api/auth/login`)
+   - These endpoints wrap Supabase Auth SDK operations on the server-side
+   - Registration automatically creates a user profile in a single request
+   - Endpoints return JWT tokens (access token and refresh token) for authenticated sessions
+   - Client stores tokens securely (localStorage or sessionStorage) and includes them in subsequent requests
 
 2. **API Authentication:**
-   - All API endpoints (except public endpoints, if any) require authentication
+   - All API endpoints (except authentication endpoints) require authentication
    - Clients must include the JWT access token in the `Authorization` header:
      ```
      Authorization: Bearer <access_token>
@@ -474,6 +591,7 @@ The SmartMeal API uses **Supabase Auth** with **JWT (JSON Web Tokens)** for auth
    ```
    Client Request → API Endpoint → Astro Middleware → Verify JWT → Extract user_id → Process Request
    ```
+   - Public endpoints (`/api/auth/register`, `/api/auth/login`) bypass token validation
 
 4. **Middleware Implementation (Astro):**
    - A global middleware (`src/middleware/index.ts`) intercepts all API requests
@@ -481,6 +599,7 @@ The SmartMeal API uses **Supabase Auth** with **JWT (JSON Web Tokens)** for auth
    - Extracts the authenticated user's ID (`auth.uid()`)
    - Attaches user context to the request
    - Returns `401 Unauthorized` if token is invalid or missing
+   - Allows public authentication endpoints to proceed without token validation
 
 5. **Row-Level Security (RLS):**
    - Supabase RLS policies ensure database-level security
@@ -516,6 +635,13 @@ The SmartMeal API uses **Supabase Auth** with **JWT (JSON Web Tokens)** for auth
 ## 4. Validation and Business Logic
 
 ### 4.1 Validation Rules by Resource
+
+#### Authentication Resource
+
+| Field | Validation Rules |
+|-------|-----------------|
+| `email` | - Required (for registration and login)<br>- Must be a valid email format<br>- Case-insensitive<br>- Must be unique (for registration) |
+| `password` | - Required (for registration and login)<br>- Minimum length: 6 characters (configurable in Supabase Auth)<br>- No maximum length enforced by API (handled by Supabase) |
 
 #### Profile Resource
 
@@ -622,16 +748,22 @@ The SmartMeal API uses **Supabase Auth** with **JWT (JSON Web Tokens)** for auth
 
 #### 5. Profile Creation After Registration
 
-**Endpoint:** `POST /api/profiles`
+**Endpoint:** `POST /api/auth/register`
 
 **Flow:**
-1. User registers via Supabase Auth SDK (client-side)
-2. After successful registration, client immediately calls `POST /api/profiles`
-3. API creates profile with `user_id` = authenticated user's ID
-4. If profile already exists: Return `409 Conflict`
-5. Profile is created with empty `ingredients_to_avoid` array by default
+1. User submits registration request with email and password
+2. API validates email format and password length
+3. API calls Supabase Auth to create user account
+4. On successful user creation, API immediately creates profile with:
+   - `user_id` = newly created user's ID
+   - `ingredients_to_avoid` = empty array (default value)
+5. Both user and profile creation happen in a single transaction-like flow
+6. If user creation succeeds but profile creation fails, error is logged and profile can be created via `POST /api/profiles` later
+7. Returns user info, session tokens, and created profile in response
 
-**Alternative Flow:** Use Supabase database triggers to automatically create profile when user registers (can be implemented in future iteration).
+**Profile Preferences:** Users can update their `ingredients_to_avoid` list after registration by calling `PATCH /api/profiles/me`.
+
+**Manual Profile Creation:** The standalone `POST /api/profiles` endpoint remains available for cases where profile creation during registration fails, or for future migration scenarios.
 
 #### 6. Pagination Logic
 
