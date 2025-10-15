@@ -131,6 +131,27 @@ Authenticates a user and returns access tokens.
     ```
   - `500 Internal Server Error` - Server error during login
 
+#### Logout User
+Logs out the current user by invalidating their session.
+
+- **HTTP Method:** `POST`
+- **URL Path:** `/api/auth/logout`
+- **Description:** Invalidates the current user session via Supabase Auth, ending the authenticated session
+- **Authentication:** Required (JWT token)
+- **Request Payload:** None
+- **Response Payload:**
+  ```json
+  {
+    "success": true,
+    "message": "Logged out successfully"
+  }
+  ```
+- **Success Codes:**
+  - `200 OK` - Logout successful
+- **Error Codes:**
+  - `401 Unauthorized` - User not authenticated or token invalid
+  - `500 Internal Server Error` - Server error during logout
+
 #### Delete User Account
 Permanently deletes the authenticated user's account and all associated data.
 
@@ -573,10 +594,11 @@ The SmartMeal API uses **Supabase Auth** with **JWT (JSON Web Tokens)** for auth
 #### Implementation Details
 
 1. **Authentication Endpoints:**
-   - User registration and login are handled through custom API endpoints (`POST /api/auth/register`, `POST /api/auth/login`)
+   - User registration, login, and logout are handled through custom API endpoints (`POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/logout`)
    - These endpoints wrap Supabase Auth SDK operations on the server-side
    - Registration automatically creates a user profile in a single request
-   - Endpoints return JWT tokens (access token and refresh token) for authenticated sessions
+   - Login endpoint returns JWT tokens (access token and refresh token) for authenticated sessions
+   - Logout endpoint invalidates the current session via Supabase Auth
    - Client stores tokens securely (localStorage or sessionStorage) and includes them in subsequent requests
 
 2. **API Authentication:**
@@ -757,13 +779,14 @@ The SmartMeal API uses **Supabase Auth** with **JWT (JSON Web Tokens)** for auth
 4. On successful user creation, API immediately creates profile with:
    - `user_id` = newly created user's ID
    - `ingredients_to_avoid` = empty array (default value)
-5. Both user and profile creation happen in a single transaction-like flow
-6. If user creation succeeds but profile creation fails, error is logged and profile can be created via `POST /api/profiles` later
-7. Returns user info, session tokens, and created profile in response
+5. Both user and profile creation happen in a single atomic flow
+6. Returns user info, session tokens, and created profile in response
+
+**MVP Assumption:** For the MVP, profile creation is assumed to always succeed. No error handling for partial failure scenarios is implemented.
 
 **Profile Preferences:** Users can update their `ingredients_to_avoid` list after registration by calling `PATCH /api/profiles/me`.
 
-**Manual Profile Creation:** The standalone `POST /api/profiles` endpoint remains available for cases where profile creation during registration fails, or for future migration scenarios.
+**Manual Profile Creation:** The standalone `POST /api/profiles` endpoint remains available for future migration scenarios or edge cases.
 
 #### 6. Pagination Logic
 

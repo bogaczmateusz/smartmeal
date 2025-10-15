@@ -42,7 +42,7 @@ Key architectural decisions include:
 - **Key Information to Display**: A grid of recipe cards. If no recipes exist, an "empty state" message is shown.
 - **Key View Components**: `AuthenticatedLayout` (with main navigation), `RecipeCard`, `RecipeGrid`, `EmptyState`.
 - **UX, Accessibility, and Security**:
-  - **UX**: A skeleton loader is shown while recipes are being fetched. Recipe cards are clickable, leading to the detail view. The header contains prominent "Generate with AI" and "Add Manually" buttons.
+  - **UX**: A skeleton loader is shown while recipes are being fetched. Recipe cards are clickable, leading to the detail view. The header contains prominent "Generate with AI" and "Add Manually" buttons. **Note:** For MVP, all recipes will be loaded at once without pagination UI (the API supports pagination for future use).
   - **Accessibility**: The grid layout is responsive. Each recipe card is a single navigable link.
   - **Security**: This route is protected and requires authentication.
 
@@ -78,13 +78,13 @@ Key architectural decisions include:
 
 ### Profile Page
 - **View Path**: `/app/profile`
-- **Main Purpose**: To allow users to manage their preferences.
-- **Key Information to Display**: A field for managing the "ingredients to avoid" list.
-- **Key View Components**: `AuthenticatedLayout`, `AvoidListInput`.
+- **Main Purpose**: To allow users to manage their preferences and account settings.
+- **Key Information to Display**: A field for managing the "ingredients to avoid" list, and a danger zone section for account deletion.
+- **Key View Components**: `AuthenticatedLayout`, `AvoidListInput`, `ConfirmationModal` (for account deletion).
 - **UX, Accessibility, and Security**:
-  - **UX**: A tag-based input component allows for easy addition and removal of ingredients. A "Save" button becomes active when changes are made and shows a spinner on submission.
-  - **Accessibility**: The tag input is keyboard-navigable.
-  - **Security**: This route is protected.
+  - **UX**: A tag-based input component allows for easy addition and removal of ingredients. A "Save" button becomes active when changes are made and shows a spinner on submission. At the bottom of the page, a danger zone section contains a "Delete Account" button in destructive styling. Clicking it opens a ConfirmationModal with strong warning text ("This action cannot be undone. All your recipes and data will be permanently deleted.") requiring explicit confirmation before proceeding.
+  - **Accessibility**: The tag input is keyboard-navigable. The danger zone is clearly separated and labeled for screen readers.
+  - **Security**: This route is protected. Account deletion requires confirmation to prevent accidental deletion.
 
 ## 3. User Journey Map
 
@@ -116,6 +116,6 @@ Unauthenticated views (`/login`, `/register`) use a simpler layout with a minima
 - **`RecipeForm`**: A reusable form component for creating and editing recipes. It manages dynamic field arrays for ingredients and preparation steps.
 - **`IngredientInput`**: A tag-based input component used on the AI Generator page for entering ingredients and on the Profile page for managing the "ingredients to avoid" list.
 - **`RecipePreview`**: A read-only component that displays a formatted, AI-generated recipe before it is saved. It includes "Save" and "Reject" action buttons.
-- **`ConfirmationModal`**: A dialog component used to confirm destructive actions, such as deleting a recipe. It requires explicit user confirmation before proceeding.
+- **`ConfirmationModal`**: A dialog component used to confirm destructive actions, such as deleting a recipe or deleting a user account. It requires explicit user confirmation before proceeding.
 - **`SkeletonLoader`**: A component that mimics the layout of content (e.g., recipe cards, recipe details) to provide a visual placeholder while data is being fetched, improving perceived performance.
 - **`EmptyState`**: A component displayed on the "My Recipes" page when the user has no saved recipes. It provides a helpful message and clear call-to-action buttons ("Generate with AI", "Add Manually").

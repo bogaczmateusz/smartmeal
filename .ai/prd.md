@@ -41,7 +41,7 @@ Users often rely on browser bookmarks or saved links to external recipe sites, w
 - Users can view all their saved recipes (both AI-generated and manual).
 - Saved recipes will be displayed in a card-based layout showing the title and ingredients. No images will be included in the MVP.
 - Users can view the detailed page of a saved recipe, which presents ingredients and preparation steps clearly.
-- Users can edit their manually created recipes.
+- Users can edit any of their saved recipes (both AI-generated and manually created) after they have been saved to the database.
 - Users can delete any of their saved recipes.
 
 ### 3.5 Platform and Design
@@ -58,7 +58,7 @@ Users often rely on browser bookmarks or saved links to external recipe sites, w
 - User profile with an "ingredients to avoid" list.
 - AI recipe generation from a minimum of three ingredients.
 - Manual recipe creation with structured fields.
-- Viewing, editing (manual only), and deleting saved recipes.
+- Viewing, editing (all saved recipes), and deleting saved recipes.
 - Card-based layout for recipe lists.
 - Web-only platform with a mobile-responsive design.
 
@@ -111,49 +111,6 @@ _Acceptance Criteria_:
 - Then I am logged out of the application.
 - And I am redirected to the login page.
 
-_ID_: US-012
-_Title_: Create a Manual Recipe
-_Description_: As a user, I want to manually enter my own recipes so I can store my personal collection in one place.
-_Acceptance Criteria_:
-
-- Given I am on the "Create Recipe" page,
-- When I fill in the title, add at least one ingredient, and at least one preparation step,
-- Then I can save the recipe.
-- The form should have separate, repeatable fields for ingredients and steps.
-- When I save the recipe, it is added to my collection.
-
-_ID_: US-013
-_Title_: View List of Saved Recipes
-_Description_: As a user, I want to see a list of all my saved recipes so I can browse them.
-_Acceptance Criteria_:
-
-- Given I am logged in,
-- When I navigate to my recipes page,
-- Then I see a card-based layout displaying all my saved recipes.
-- Each card should show at least the recipe title and ingredients.
-
-_ID_: US-014
-_Title_: View a Single Recipe's Details
-_Description_: As a user, I want to view the full details of a specific recipe from my list.
-_Acceptance Criteria_:
-
-- Given I am viewing my list of saved recipes,
-- When I click on a recipe card,
-- Then I am taken to a detailed view of that recipe.
-- And I can clearly see the title, full list of ingredients, and all preparation steps.
-
-_ID_: US-016
-_Title_: Delete a Saved Recipe
-_Description_: As a user, I want to delete a recipe I no longer need from my collection.
-_Acceptance Criteria_:
-
-- Given I am viewing a recipe (either on the list or detail view),
-- When I choose the delete option,
-- Then a confirmation prompt is displayed.
-- When I confirm, the recipe is permanently removed from my collection.
-
-### 5.2 User Stories (Post-MVP)
-
 _ID_: US-004
 _Title_: Manage "Ingredients to Avoid" List
 _Description_: As a user, I want to manage a list of ingredients to avoid in my profile so that the application is aware of my dietary restrictions or preferences.
@@ -175,7 +132,7 @@ _Acceptance Criteria_:
 - Then I see a confirmation prompt to prevent accidental deletion.
 - When I confirm the deletion,
 - Then my account and all my data (recipes, preferences) are permanently erased.
-- And I am logged out and redirected to the homepage.
+- And I am logged out and redirected to the login page.
 
 _ID_: US-006
 _Title_: Generate a Recipe Using AI
@@ -238,17 +195,57 @@ _Acceptance Criteria_:
 - Then a user-friendly error message is displayed, indicating the service is temporarily down.
 - And I am not shown a broken page.
 
-_ID_: US-015
-_Title_: Edit a Manually Created Recipe
-_Description_: As a user, I want to edit a recipe I created manually to correct mistakes or make adjustments.
+_ID_: US-012
+_Title_: Create a Manual Recipe
+_Description_: As a user, I want to manually enter my own recipes so I can store my personal collection in one place.
 _Acceptance Criteria_:
 
-- Given I am viewing the details of a manually created recipe,
+- Given I am on the "Create Recipe" page,
+- When I fill in the title, add at least one ingredient, and at least one preparation step,
+- Then I can save the recipe.
+- The form should have separate, repeatable fields for ingredients and steps.
+- When I save the recipe, it is added to my collection.
+
+_ID_: US-013
+_Title_: View List of Saved Recipes
+_Description_: As a user, I want to see a list of all my saved recipes so I can browse them.
+_Acceptance Criteria_:
+
+- Given I am logged in,
+- When I navigate to my recipes page,
+- Then I see a card-based layout displaying all my saved recipes.
+- Each card should show at least the recipe title and ingredients.
+
+_ID_: US-014
+_Title_: View a Single Recipe's Details
+_Description_: As a user, I want to view the full details of a specific recipe from my list.
+_Acceptance Criteria_:
+
+- Given I am viewing my list of saved recipes,
+- When I click on a recipe card,
+- Then I am taken to a detailed view of that recipe.
+- And I can clearly see the title, full list of ingredients, and all preparation steps.
+
+_ID_: US-015
+_Title_: Edit a Saved Recipe
+_Description_: As a user, I want to edit any of my saved recipes (both AI-generated and manually created) to correct mistakes or make adjustments.
+_Acceptance Criteria_:
+
+- Given I am viewing the details of any saved recipe,
 - When I click the "Edit" button,
-- Then I am taken to the recipe creation form, pre-filled with the recipe's data.
-- And I can modify the title, ingredients, and preparation steps.
+- Then I can modify the title, ingredients, and preparation steps in place.
 - When I save my changes, the recipe is updated in my collection.
-- The "Edit" option is not available for AI-generated recipes.
+- Note: AI-generated recipes can only be edited after they have been saved to the database. Unsaved AI-generated recipes in preview state cannot be edited.
+
+_ID_: US-016
+_Title_: Delete a Saved Recipe
+_Description_: As a user, I want to delete a recipe I no longer need from my collection.
+_Acceptance Criteria_:
+
+- Given I am viewing a recipe (either on the list or detail view),
+- When I choose the delete option,
+- Then a confirmation prompt is displayed.
+- When I confirm, the recipe is permanently removed from my collection.
 
 _ID_: US-017
 _Title_: Responsive UI for Mobile Devices
@@ -258,6 +255,10 @@ _Acceptance Criteria_:
 - Given I open the application on a mobile browser,
 - Then all pages and features are usable and legible without horizontal scrolling.
 - And UI elements like buttons and input fields are easy to tap.
+
+### 5.2 User Stories (Post-MVP)
+
+This section is reserved for future features that are not part of the initial MVP release.
 
 ## 6. Success Metrics
 
