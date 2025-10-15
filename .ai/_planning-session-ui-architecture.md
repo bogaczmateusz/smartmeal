@@ -4,8 +4,8 @@
 1. The main navigation will be built using shadcn/ui and, for the MVP, will contain a link to "My Recipes" and a user dropdown menu with "Profile" and "Logout" options.
 2. React's local component state (useState) will be used to manage the temporary state of an AI-generated recipe before it is saved.
 3. A dual strategy for error handling will be implemented: toast notifications for non-critical/server errors and inline messages for form validation errors.
-4. The post-registration user flow is defined: after client-side registration, a POST request to /api/profiles will be made, followed by a redirection to the main recipe list page. (Authentication features will be implemented at a later stage).
-5. Protected routes will be handled by a client-side wrapper or HOC. (Authentication features will be implemented at a later stage).
+4. The post-registration user flow is defined: after client-side registration, a POST request to /api/profiles will be made, followed by a redirection to the main recipe list page.
+5. Protected routes will be handled by a client-side wrapper or HOC.
 6. Responsiveness will be achieved using Tailwind's utility variants (e.g., :sm, :md, :lg).
 7. The UI will prevent editing of AI-generated recipes only in their temporary pre-save state. All saved recipes (both AI and manual) will have an "Edit" button on their detail page.
 8. Visual loading indicators are required for all API calls: skeleton loaders for page-level data and spinners within buttons for component-level actions.
@@ -21,6 +21,7 @@
 18. Navigation will be handled by Astro's file-based routing, with window.location.href used for navigation initiated from within React components.
 19. Form validation feedback will be provided onBlur and again on form submission.
 20. Data fetching on pages like "My Recipes" will be done client-side within a React component, which initially displays a server-rendered skeleton loader.
+21. Unauthenticated users will have access to dedicated Login and Registration pages. A successful login or registration will redirect the user to the "My Recipes" page.
 
 </decisions>
 <matched_recommendations>
@@ -37,7 +38,6 @@
 10. Profile UI: A tag-based input component is recommended for managing the "ingredients to avoid" list.
 11. Data Fetching: Use a client-side fetching strategy in React components for dynamic data, showing a server-rendered skeleton loader initially.
 12. "Edit Mode" Definition: In-place editing on the detail page itself. Change specific parts of text to specific inputs.
-13. All UI development will initially proceed with mocked data.
 
 </matched_recommendations>
 <ui_architecture_planning_summary>
@@ -49,7 +49,8 @@ The UI will be built using Astro for the static site structure and React for int
 ## Key Views, Screens, and User Flows
 
 - My Recipes Page: The main dashboard for authenticated users. It displays a grid of recipe cards. If the user has no recipes, it shows an empty state with CTAs to "Generate with AI" or "Add Manually". Two prominent buttons in the header provide access to these same creation flows.
-- Recipe Detail Page: Displays the full details of a selected recipe. The header contains "Edit" and "Delete" actions. The delete action triggers a confirmation modal.
+- Login & Registration Pages: Unauthenticated users will see pages for login and registration. Upon successful authentication, they will be redirected to the "My Recipes" page.
+- Recipe Detail Page: Displays the full details of a selected recipe. The header contains "Edit" and "Delete" actions. The delete action triggers a confirmation modal. "Edit Mode" will allow for in-place editing by converting text elements into form inputs.
 - Recipe Creation/Editing Flow: A single-page form will be used for both creating a manual recipe and editing an existing one. The form will feature dynamic field arrays for adding/removing ingredients and preparation steps.
 - AI Recipe Generation Flow: The user enters ingredients to get a recipe. The result is displayed in a read-only preview state. The user can then "Save" the recipe (which posts it to /api/recipes and redirects) or "Reject" it (which discards the state and redirects). User feedback is provided via toast notifications.
 - Profile Page: Will feature a tag-based input field for users to manage their "ingredients to avoid" list.
@@ -62,7 +63,7 @@ The UI will be built using Astro for the static site structure and React for int
 ## Responsiveness, Accessibility, and Security
 - Responsiveness: The UI will be fully responsive, adapting to various screen sizes from mobile to desktop using Tailwind's utility variants.
 - Accessibility: The application will adhere to WCAG standards. This includes using descriptive aria-label attributes for controls in dynamic forms and managing focus programmatically to ensure a seamless experience for users of assistive technologies.
-- Security: While the implementation of authentication is deferred, the plan is to secure protected pages and components using a client-side wrapper that verifies the user's session with the Supabase client.
+- Security: Protected pages and components will be secured using a client-side wrapper that verifies the user's session with the Supabase client.
 
 </ui_architecture_planning_summary>
 </conversation_summary>
