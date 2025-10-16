@@ -254,7 +254,7 @@ Users can only delete their own recipes.
 ### 4. recipe_source ENUM
 - A custom PostgreSQL ENUM type ensures data integrity by restricting the `source` column to only valid values ('ai' or 'manual').
 - This prevents invalid data entry and makes the schema self-documenting.
-- Note: All saved recipes (both 'ai' and 'manual') are editable after being saved. The application logic handles preventing edits to AI-generated recipes before they are explicitly saved.
+- The `source` field is informational and does not impose any editing restrictions at the database level — both 'ai' and 'manual' recipes can be updated via the API once saved.
 
 ### 5. Cascading Deletes
 - `ON DELETE CASCADE` on all foreign keys ensures that when a user deletes their account, all associated data (profile, recipes) is automatically removed.

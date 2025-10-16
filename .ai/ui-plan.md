@@ -40,9 +40,9 @@ Key architectural decisions include:
 - **View Path**: `/app/recipes`
 - **Main Purpose**: To display all of a user's saved recipes and serve as the main entry point to the application.
 - **Key Information to Display**: A grid of recipe cards. If no recipes exist, an "empty state" message is shown.
-- **Key View Components**: `AuthenticatedLayout` (with main navigation), `RecipeCard`, `RecipeGrid`, `EmptyState`.
+- **Key View Components**: `AuthenticatedLayout` (with main navigation header), `RecipeCard`, `RecipeGrid`, `EmptyState`.
 - **UX, Accessibility, and Security**:
-  - **UX**: A skeleton loader is shown while recipes are being fetched. Recipe cards are clickable, leading to the detail view. The header contains prominent "Generate with AI" and "Add Manually" buttons. **Note:** For MVP, all recipes will be loaded at once without pagination UI (the API supports pagination for future use).
+  - **UX**: A skeleton loader is shown while recipes are being fetched via `GET /api/recipes?limit=100&sort=created_at&order=desc`. Recipe cards are clickable, leading to the detail view. Users can create new recipes using the "Generate with AI" and "Add Manually" buttons in the persistent header. **MVP Note:** All recipes are loaded at once without pagination UI controls. The API's pagination capabilities will be utilized post-MVP when implementing infinite scroll or page-based navigation.
   - **Accessibility**: The grid layout is responsive. Each recipe card is a single navigable link.
   - **Security**: This route is protected and requires authentication.
 
@@ -52,8 +52,8 @@ Key architectural decisions include:
 - **Key Information to Display**: Recipe title, a list of ingredients, and numbered preparation steps.
 - **Key View Components**: `AuthenticatedLayout`, `RecipeDetailView`, `ConfirmationModal` (for deletion).
 - **UX, Accessibility, and Security**:
-  - **UX**: A skeleton loader is shown while the recipe is fetched. The header contains "Edit" and "Delete" buttons. Clicking "Edit" enables an in-place editing mode where text fields become input controls. Deletion requires confirmation via a modal.
-  - **Accessibility**: Content is structured semantically (headings, lists). All interactive controls have accessible labels.
+  - **UX**: A skeleton loader is shown while the recipe is fetched. The page header contains "Edit" and "Delete" buttons. **Clicking "Edit" transforms the page into an in-place editing mode**: the recipe title becomes an editable text input, ingredient items become editable fields with add/remove controls (similar to the `RecipeForm` component), and preparation steps become editable fields. The "Edit" button is replaced with "Save" and "Cancel" buttons. Clicking "Save" sends a `PATCH` request to `/api/recipes/:id`. Clicking "Cancel" reverts to the read-only view without saving changes. Deletion requires confirmation via a modal.
+  - **Accessibility**: Content is structured semantically (headings, lists). All interactive controls have accessible labels. Focus management ensures smooth transition between view and edit modes.
   - **Security**: This route is protected. The API ensures users can only access their own recipes.
 
 ### Create Recipe Page
@@ -72,7 +72,7 @@ Key architectural decisions include:
 - **Key Information to Display**: An input field for ingredients (tag-based), and a preview area for the generated recipe.
 - **Key View Components**: `AuthenticatedLayout`, `IngredientInput`, `RecipePreview`.
 - **UX, Accessibility, and Security**:
-  - **UX**: A minimum of three ingredients is required. The "Generate" button shows a loading spinner. The generated recipe is displayed in a read-only preview with "Save" and "Reject" actions. Warnings for avoided ingredients are shown as non-blocking alerts.
+  - **UX**: A minimum of three ingredients is required. The "Generate" button shows a loading spinner. The generated recipe is displayed in a **read-only preview with no edit controls** — the `RecipePreview` component shows only "Save" and "Reject" action buttons. Users cannot modify the AI-generated recipe before saving. To edit an AI-generated recipe, users must first save it (which navigates to its detail page) and then use the in-place edit mode. Warnings for avoided ingredients are shown as non-blocking alerts above the preview.
   - **Accessibility**: The ingredient input provides clear instructions. The preview content is structured semantically.
   - **Security**: This route is protected.
 
@@ -97,25 +97,35 @@ Key architectural decisions include:
 6.  **Save Recipe**: The user likes the recipe and clicks the "Save" button. A loading indicator appears while the client sends the recipe data via a `POST` request to `/api/recipes`.
 7.  **Confirmation and Redirect**: A success toast notification appears. The user is redirected to the detail page for the newly created recipe at `/app/recipes/:new_id`, where they can see their saved recipe.
 
+### Logout Flow
+1.  **Initiate Logout**: User clicks the "Logout" option from the User Dropdown Menu in the authenticated layout header.
+2.  **API Call**: The client sends a `POST` request to `/api/auth/logout` to invalidate the server-side session.
+3.  **Clear Client State**: After successful API response, the client clears all stored authentication tokens (from localStorage/sessionStorage).
+4.  **Redirect**: User is redirected to `/login` page.
+
 ## 4. Layout and Navigation Structure
 
 The application utilizes a primary layout component for all authenticated views.
 
 - **`AuthenticatedLayout`**: This layout contains the main application header and a content area.
   - **Header**: The header is persistent across all authenticated views. It contains:
-    - The **SmartMeal Logo**, which links back to the "My Recipes" page (`/app/recipes`).
-    - A **User Dropdown Menu** at the top right. This menu provides navigation links to:
+    - **Left side:** The **SmartMeal Logo**, which links back to the "My Recipes" page (`/app/recipes`)
+    - **Center/Left side:** Primary action buttons:
+      - **"Generate with AI"** button (navigates to `/app/recipes/generate`)
+      - **"Add Manually"** button (navigates to `/app/recipes/new`)
+    - **Right side:** A **User Dropdown Menu**. This menu provides navigation links to:
       - **Profile** (`/app/profile`)
-      - **Logout** (triggers logout action and redirects to `/login`)
+      - **Logout** (calls `POST /api/auth/logout`, clears client tokens, and redirects to `/login`)
 
 Unauthenticated views (`/login`, `/register`) use a simpler layout with a minimal header and footer.
 
 ## 5. Key Components
 
-- **`RecipeCard`**: A component used on the "My Recipes" page to display a summary of a recipe (title, truncated ingredients). The entire card acts as a single link to the recipe's detail page.
-- **`RecipeForm`**: A reusable form component for creating and editing recipes. It manages dynamic field arrays for ingredients and preparation steps.
+- **`RecipeCard`**: A component used on the "My Recipes" page to display a summary of a recipe. It shows the recipe title and a truncated ingredients list (displays the first 3 ingredients, followed by "..." if more exist, e.g., "chicken, rice, broccoli..."). The entire card acts as a single link to the recipe's detail page.
+- **`RecipeForm`**: A reusable form component for creating recipes. It manages dynamic field arrays for ingredients and preparation steps. Similar editing controls are used in the in-place edit mode on the Recipe Detail Page.
+- **`RecipeDetailView`**: A component that displays recipe details with two modes: a read-only view mode and an in-place edit mode. The component manages the state toggle between these modes and handles the save/cancel actions.
 - **`IngredientInput`**: A tag-based input component used on the AI Generator page for entering ingredients and on the Profile page for managing the "ingredients to avoid" list.
 - **`RecipePreview`**: A read-only component that displays a formatted, AI-generated recipe before it is saved. It includes "Save" and "Reject" action buttons.
 - **`ConfirmationModal`**: A dialog component used to confirm destructive actions, such as deleting a recipe or deleting a user account. It requires explicit user confirmation before proceeding.
 - **`SkeletonLoader`**: A component that mimics the layout of content (e.g., recipe cards, recipe details) to provide a visual placeholder while data is being fetched, improving perceived performance.
-- **`EmptyState`**: A component displayed on the "My Recipes" page when the user has no saved recipes. It provides a helpful message and clear call-to-action buttons ("Generate with AI", "Add Manually").
+- **`EmptyState`**: A reusable component that displays a contextual message when no data is available. It can be configured with different messages and call-to-action buttons for various contexts. **Primary usage in MVP:** Displayed on the "My Recipes" page when the user has no saved recipes, showing the message and action buttons ("Generate with AI", "Add Manually"). Can be reused in other contexts such as filtered results with no matches or error states.

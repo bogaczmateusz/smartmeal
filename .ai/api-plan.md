@@ -159,6 +159,7 @@ Permanently deletes the authenticated user's account and all associated data.
 - **URL Path:** `/api/users/me`
 - **Description:** Deletes the current user's account, profile, and all recipes (cascading delete)
 - **Authentication:** Required (JWT token)
+- **UI Requirement:** Before calling this endpoint, the UI must display a confirmation modal with the warning: "This action cannot be undone. All your recipes and data will be permanently deleted." and require explicit user confirmation.
 - **Request Payload:** None
 - **Response Payload:**
   ```json
@@ -209,6 +210,7 @@ Creates a profile for the authenticated user (typically called after registratio
 - **URL Path:** `/api/profiles`
 - **Description:** Creates a new profile for the authenticated user
 - **Authentication:** Required (JWT token)
+- **MVP Note:** This endpoint is **not used in normal MVP user flows** as profiles are automatically created during registration via `POST /api/auth/register`. This endpoint is retained for future admin operations, data migration scenarios, or edge cases where a profile needs to be manually created.
 - **Request Payload:**
   ```json
   {
@@ -407,6 +409,7 @@ Retrieves all recipes for the authenticated user with pagination and sorting.
 - **URL Path:** `/api/recipes`
 - **Description:** Fetches a paginated list of the user's recipes
 - **Authentication:** Required (JWT token)
+- **MVP Note:** The UI will initially fetch all recipes using a high limit value (e.g., `limit=100`) without displaying pagination controls. Pagination UI will be added post-MVP.
 - **Query Parameters:**
   - `page` (optional): Page number, default `1`
   - `limit` (optional): Items per page, default `20`, max `100`
@@ -414,6 +417,7 @@ Retrieves all recipes for the authenticated user with pagination and sorting.
   - `order` (optional): Sort order - `asc` or `desc`, default `desc`
   - `source` (optional): Filter by source - `ai` or `manual`
 - **Example:** `/api/recipes?page=1&limit=20&sort=created_at&order=desc`
+- **MVP Example:** `/api/recipes?limit=100&sort=created_at&order=desc` (fetch all recipes for MVP)
 - **Request Payload:** None
 - **Response Payload:**
   ```json
@@ -637,8 +641,8 @@ The SmartMeal API uses **Supabase Auth** with **JWT (JSON Web Tokens)** for auth
 2. **Recipe Access:**
    - Users can only view, create, update, and delete their own recipes
    - Enforced by RLS policies: `auth.uid() = user_id`
-   - Both AI-generated and manually created recipes can be edited once saved to the database
-   - **Client-side rule:** AI-generated recipes cannot be edited before being saved (enforced in UI, not API)
+   - Both AI-generated and manually created recipes can be edited once saved to the database via `PATCH /api/recipes/:id`
+   - Note: The restriction preventing edits to AI-generated recipes before they are saved is a client-side UI concern (the preview state never reaches the database until explicitly saved)
 
 3. **Account Deletion:**
    - Users can only delete their own account
@@ -750,7 +754,7 @@ The SmartMeal API uses **Supabase Auth** with **JWT (JSON Web Tokens)** for auth
 5. Trigger automatically updates `updated_at` timestamp
 6. Return updated recipe
 
-**Important:** Once a recipe is saved to the database (regardless of source), it becomes fully editable. The restriction on editing AI-generated recipes applies only to the client-side state before the recipe is saved. This is enforced in the UI layer, not the API.
+**Important:** Once a recipe is saved to the database (regardless of source), it becomes fully editable. The API does not distinguish between AI-generated and manual recipes for update operations — both can be modified freely once saved.
 
 #### 4. Account Deletion Cascade
 
@@ -786,7 +790,7 @@ The SmartMeal API uses **Supabase Auth** with **JWT (JSON Web Tokens)** for auth
 
 **Profile Preferences:** Users can update their `ingredients_to_avoid` list after registration by calling `PATCH /api/profiles/me`.
 
-**Manual Profile Creation:** The standalone `POST /api/profiles` endpoint remains available for future migration scenarios or edge cases.
+**Manual Profile Creation:** The standalone `POST /api/profiles` endpoint is **not used in normal MVP user flows** and is retained solely for future admin operations, data migration scenarios, or edge cases where manual profile creation is required.
 
 #### 6. Pagination Logic
 
@@ -878,6 +882,8 @@ Rate limit headers to include:
 6. Track user metrics: registrations, recipe creations, AI vs manual ratio
 
 **Metrics to track (per PRD success metrics):**
-- AI recipe save rate: `(saved_ai_recipes / generated_ai_recipes) × 100%` (target: 75%)
-- AI vs manual ratio: `(ai_recipes / total_recipes) × 100%` (target: 75%)
+- AI-generated recipe ratio: `(saved_ai_recipes / total_saved_recipes) × 100%` (target: 75%)
+  - This measures the proportion of saved recipes that have `source = 'ai'`
+  
+**Note:** Tracking AI recipe rejection rate is not implemented in the MVP since rejected recipes are discarded client-side without API calls. This can be added post-MVP with a dedicated analytics tracking endpoint.
 
