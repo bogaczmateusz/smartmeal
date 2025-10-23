@@ -1,6 +1,69 @@
 import type { Tables, TablesInsert, TablesUpdate, Enums } from "./db/database.types";
 
 // ============================================================================
+// Auth DTOs and Command Models
+// ============================================================================
+
+/**
+ * Command model for user registration
+ * Used for POST /api/auth/register request
+ */
+export interface RegisterCommand {
+  email: string;
+  password: string;
+}
+
+/**
+ * Command model for user login
+ * Used for POST /api/auth/login request
+ */
+export interface LoginCommand {
+  email: string;
+  password: string;
+}
+
+/**
+ * Authentication user data transfer object
+ * Subset of user information returned in auth responses
+ */
+export interface AuthUserDTO {
+  id: string;
+  email: string;
+  created_at: string;
+}
+
+/**
+ * Authentication session data transfer object
+ * Contains session tokens and expiration information
+ */
+export interface AuthSessionDTO {
+  access_token: string;
+  refresh_token: string;
+  expires_at: number;
+  expires_in: number;
+}
+
+/**
+ * Complete response for user registration
+ * Used for POST /api/auth/register response
+ * Includes user, session, and newly created profile
+ */
+export interface RegisterResponseDTO {
+  user: AuthUserDTO;
+  session: AuthSessionDTO;
+  profile: ProfileDTO;
+}
+
+/**
+ * Complete response for user login
+ * Used for POST /api/auth/login response
+ */
+export interface LoginResponseDTO {
+  user: AuthUserDTO;
+  session: AuthSessionDTO;
+}
+
+// ============================================================================
 // Profile DTOs and Command Models
 // ============================================================================
 
